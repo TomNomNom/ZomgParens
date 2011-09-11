@@ -58,7 +58,7 @@ class Parser {
         continue;
       }
       
-      $token .= $this->char;
+      $token .= $this->getChar();
     }
 
     return $sexp;
