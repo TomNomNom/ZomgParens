@@ -1,0 +1,7 @@
+<phpunit bootstrap="Lisp/Init.php">
+  <testsuites>
+    <testsuite name="Lisp">
+      <directory>Test</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>

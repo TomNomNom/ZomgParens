@@ -1,18 +1,10 @@
 <?php
 namespace Lisp;
 
-$test = "
-  (echo 1 2 (+ 2 3))
-  (echo 'Hello, World!')
-  (echo 'They\'re a handful of \\\')
-";
-
-echo $test;
-
 class Parser {
   protected $rawCode = '';
   protected $chars   = array();
-  protected $char    = '';
+  protected $char    = null;
 
   const ESCAPE_CHAR     = '\\';
   const SEXP_START_CHAR = '(';
@@ -29,7 +21,9 @@ class Parser {
       $this->rawCode = $rawCode;
     }
     $this->chars = str_split($this->rawCode);
-    return $this->parseCharArray();
+    $sexp = $this->parseCharArray();
+    $this->cleanUp();
+    return $sexp;
   }
 
   protected function parseCharArray(){
@@ -52,7 +46,7 @@ class Parser {
       }
 
       if ($this->charIsQuote()){
-        array_push($sexp, $this->readString($this->char));
+        array_push($sexp, $this->readToEndOfString());
         continue;
       } 
 
@@ -70,7 +64,8 @@ class Parser {
     return $sexp;
   }
 
-  protected function readString($quote){
+  protected function readToEndOfString(){
+    $startQuote = $this->getChar();
     $string = '';
     $inEscapeSequence = false;
 
@@ -92,7 +87,7 @@ class Parser {
 
       // If we're not in an ES and we've hit a quote matching the starting one
       // then we're at the end of the string and need to return
-      if (!$inEscapeSequence && $this->getChar() === $quote){
+      if (!$inEscapeSequence && $this->getChar() === $startQuote){
         break;
       }
 
@@ -106,6 +101,9 @@ class Parser {
   }
 
   protected function incrementPointer(){
+    if (!isset($this->char)){
+      return $this->char = current($this->chars);
+    }
     return $this->char = next($this->chars);
   }
 
@@ -142,10 +140,9 @@ class Parser {
       " ", "\r", "\n", "\t"
     ));
   }
+
+  protected function cleanUp(){
+    $this->char = null;
+  }
 }
-
-
-$parser = new Parser($test);
-var_dump($parser->parse());
-
 
