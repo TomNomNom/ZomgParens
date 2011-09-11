@@ -57,7 +57,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($expected, $parser->parse($code));
   }
 
-  public function testWhitespaceIntolerant(){
+  public function testWhitespaceTolerant(){
     $parser = new \Lisp\Parser();
 
     $code = '
