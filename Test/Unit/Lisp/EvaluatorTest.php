@@ -3,6 +3,20 @@ namespace Test\Unit\Lisp;
 
 class EvaluatorTest extends \PHPUnit_Framework_TestCase {
   
+  protected function getSymbolTable(){
+    $tf = new \Lisp\TypeFactory();
+    $symbols = new \Lisp\SymbolTable([
+      '+' => function($a, $b) use($tf){
+        return $tf->makeScalar($a->value() + $b->value());
+      },
+      '-' => function($a, $b) use($tf){
+        return $tf->makeScalar($a->value() - $b->value());
+      }
+    ]);
+
+    return $symbols;
+  }
+
   public function testBasic(){
     $tree = [
       new \Lisp\Type\Sexp([
@@ -11,11 +25,8 @@ class EvaluatorTest extends \PHPUnit_Framework_TestCase {
         new \Lisp\Type\Scalar\Integer('3')
       ])
     ];
-    $symbols = new \Lisp\SymbolTable([
-      '+' => function($a, $b){
-        return $a + $b;
-      }
-    ]);
+
+    $symbols = $this->getSymbolTable();
     $e = new \Lisp\Evaluator($tree, $symbols); 
 
     $e->evaluate();

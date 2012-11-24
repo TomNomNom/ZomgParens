@@ -2,6 +2,20 @@
 namespace Test\Unit\Lisp\Type;
 
 class SexpTest extends \PHPUnit_Framework_TestCase {
+
+  protected function getSymbolTable(){
+    $tf = new \Lisp\TypeFactory();
+    $symbols = new \Lisp\SymbolTable([
+      '+' => function($a, $b) use($tf){
+        return $tf->makeScalar($a->value() + $b->value());
+      },
+      '-' => function($a, $b) use($tf){
+        return $tf->makeScalar($a->value() - $b->value());
+      }
+    ]);
+
+    return $symbols;
+  }
   
   public function testLength(){
     $sexp = new \Lisp\Type\Sexp([]);
@@ -48,35 +62,31 @@ class SexpTest extends \PHPUnit_Framework_TestCase {
   }
 
   public function testEvaluateBasic(){
-    $symbols = new \Lisp\SymbolTable([
-      '+' => function($a, $b){
-        return $a + $b;
-      }
-    ]);
+    $symbols = $this->getSymbolTable();
+
     $sexp = new \Lisp\Type\Sexp([
       new \Lisp\Type\Symbol('+'),
       new \Lisp\Type\Scalar\Integer('6'),
       new \Lisp\Type\Scalar\Integer('7')
     ]);
 
-    $this->assertEquals(13, $sexp->evaluate($symbols)->evaluate(), "Sexp should have evaluated to 13");
+    $this->assertEquals(13, $sexp->evaluate($symbols)->value(), "Sexp should have evaluated to 13");
   }
 
   public function testEvaluateRescurseOnce(){
-    $symbols = new \Lisp\SymbolTable([
-      '+' => function($a, $b){
-        return $a + $b;
-      },
-      '-' => function($a, $b){
-        return $a - $b;
-      }
-    ]);
+    $symbols = $this->getSymbolTable();
+
     $sexp = new \Lisp\Type\Sexp([
       new \Lisp\Type\Symbol('+'),
       new \Lisp\Type\Scalar\Integer('2'),
-      new \Lisp\Type\Scalar\Integer('3')
+      new \Lisp\Type\Sexp([
+        new \Lisp\Type\Symbol('-'),
+        new \Lisp\Type\Scalar\Integer('5'),
+        new \Lisp\Type\Scalar\Integer('2')
+      ])
     ]);
+    $this->assertEquals(5, $sexp->evaluate($symbols)->value(), "Sexp should have evaluated to 5");
   }
-
+  
 
 }
