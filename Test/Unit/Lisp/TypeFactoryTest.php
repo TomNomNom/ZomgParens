@@ -47,5 +47,15 @@ class TypeFactoryTest extends \PHPUnit_Framework_TestCase {
     $this->assertInstanceOf('\\Lisp\\Type\\Sexp', $tf->makeSexp([]), "Made type should have been \\Lisp\\Type\\Sexp");
   }
 
+  public function testIdempotent(){
+    $tf = new \Lisp\TypeFactory();
+    
+    $string = $tf->makeScalar('I am a string');
+    $this->assertEquals($string, $tf->makeScalar($string), "TypeFactory::makeScalar should be idempotent");
+
+    $integer = $tf->make(5);
+    $this->assertEquals($integer, $tf->make($integer), "TypeFactory::make should be idempotent");
+  }
+
 
 }

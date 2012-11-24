@@ -3,6 +3,9 @@ namespace Lisp;
 
 class TypeFactory {
   public function make($raw){
+    if ($raw instanceof \Lisp\Type){
+      return $raw;
+    }
     if (is_array($raw)){
       return $this->makeSexp($raw);
     }
@@ -13,6 +16,9 @@ class TypeFactory {
   }
 
   public function makeScalar($raw){
+    if ($raw instanceof \Lisp\Type){
+      return $raw;
+    }
     if (is_numeric($raw)){
       if (strpos($raw, '.') !== false){
         return $this->makeFloat($raw);
