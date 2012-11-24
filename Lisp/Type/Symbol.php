@@ -11,4 +11,9 @@ class Symbol extends \Lisp\Type {
   public function name(){
     return $this->name;
   }
+
+  public function evaluate(\Lisp\SymbolTable $symbols = null){
+    if (is_null($symbols)) return null;
+    return $symbols->get($this->name); 
+  }
 }

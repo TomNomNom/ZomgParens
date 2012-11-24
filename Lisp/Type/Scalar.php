@@ -7,8 +7,10 @@ abstract class Scalar extends \Lisp\Type {
   public function __construct($value){
     $this->value = $value;
   }
-
-  public function value(){
-    return $this->value;
+  
+  abstract public function value();
+  
+  public function evaluate(\Lisp\SymbolTable $symbols = null){
+    return $this->value();
   }
 }
