@@ -21,38 +21,59 @@ class Parser {
       $this->rawCode = $rawCode;
     }
     $this->chars = str_split($this->rawCode);
-    $sexp = $this->parseCharArray();
+
+    $sexps = [];
+    while ($this->incrementPointer()){
+      if ($this->charIsSexpStart()){
+        $sexps[] = $this->parseSexp(); 
+      }
+    }
+
     $this->cleanUp();
-    return $sexp;
+    return $sexps;
   }
 
-  protected function parseCharArray(){
-    $sexp = array();
+  protected function getTypeObj($raw){
+    if (is_numeric($raw)){
+      if (strpos($raw, '.') !== false){
+        return new Type\Scalar\Float($raw);
+      }
+      return new Type\Scalar\Integer($raw);
+    }
+    return new Type\Symbol($raw);
+  }
+
+  protected function parseSexp(){
+    $sexp = new Type\Sexp();
     $token = '';
 
     while ($this->incrementPointer()){
 
       if ($this->charIsSexpStart()){
         // Recurse
-        array_push($sexp, $this->parseCharArray());
+        $sexp->push($this->parseSexp());
         continue;
       }
 
+      // Token is numeric or a symbol
       if ($this->charIsSexpEnd()){
         if ($token != ''){
-          array_push($sexp, $token);
+          $sexp->push($this->getTypeObj($token));
         }
         break;
       }
 
+      // End of a string
       if ($this->charIsQuote()){
-        array_push($sexp, $this->readToEndOfString());
+        $string = new Type\Scalar\String($this->parseString());
+        $sexp->push($string);
         continue;
       } 
 
+      // Token is numeric or a symbol
       if ($this->charIsWhitespace()){
         if ($token != ''){
-          array_push($sexp, $token);
+          $sexp->push($this->getTypeObj($token));
         }
         $token = '';
         continue;
@@ -64,7 +85,7 @@ class Parser {
     return $sexp;
   }
 
-  protected function readToEndOfString(){
+  protected function parseString(){
     $startQuote = $this->getChar();
     $string = '';
     $inEscapeSequence = false;
