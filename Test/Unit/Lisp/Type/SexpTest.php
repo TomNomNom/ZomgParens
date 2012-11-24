@@ -47,8 +47,35 @@ class SexpTest extends \PHPUnit_Framework_TestCase {
     $this->assertNull($sexp->evaluate(), "Sexp should have evaluated to null");
   }
 
-  public function testEvaluate(){
-    $this->markTestIncomplete("TODO: Sexp evaluation tests"); 
+  public function testEvaluateBasic(){
+    $symbols = new \Lisp\SymbolTable([
+      '+' => function($a, $b){
+        return $a + $b;
+      }
+    ]);
+    $sexp = new \Lisp\Type\Sexp([
+      new \Lisp\Type\Symbol('+'),
+      new \Lisp\Type\Scalar\Integer('6'),
+      new \Lisp\Type\Scalar\Integer('7')
+    ]);
+
+    $this->assertEquals(13, $sexp->evaluate($symbols)->evaluate(), "Sexp should have evaluated to 13");
+  }
+
+  public function testEvaluateRescurseOnce(){
+    $symbols = new \Lisp\SymbolTable([
+      '+' => function($a, $b){
+        return $a + $b;
+      },
+      '-' => function($a, $b){
+        return $a - $b;
+      }
+    ]);
+    $sexp = new \Lisp\Type\Sexp([
+      new \Lisp\Type\Symbol('+'),
+      new \Lisp\Type\Scalar\Integer('2'),
+      new \Lisp\Type\Scalar\Integer('3')
+    ]);
   }
 
 

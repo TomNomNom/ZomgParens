@@ -20,6 +20,6 @@ class EvaluatorTest extends \PHPUnit_Framework_TestCase {
 
     $e->evaluate();
 
-    $this->assertEquals(5, $e->lastReturnValue(), "Last return value should have been 5");
+    $this->assertEquals(5, $e->lastReturnValue()->evaluate(), "Last return value should have been 5");
   }
 }

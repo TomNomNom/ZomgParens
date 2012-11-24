@@ -33,18 +33,9 @@ class Parser {
     return $sexps;
   }
 
-  protected function getTypeObj($raw){
-    if (is_numeric($raw)){
-      if (strpos($raw, '.') !== false){
-        return new Type\Scalar\Float($raw);
-      }
-      return new Type\Scalar\Integer($raw);
-    }
-    return new Type\Symbol($raw);
-  }
-
   protected function parseSexp(){
-    $sexp = new Type\Sexp();
+    $typeFactory = new TypeFactory();
+    $sexp = $typeFactory->makeSexp();
     $token = '';
 
     while ($this->incrementPointer()){
@@ -58,14 +49,14 @@ class Parser {
       // Token is numeric or a symbol
       if ($this->charIsSexpEnd()){
         if ($token != ''){
-          $sexp->push($this->getTypeObj($token));
+          $sexp->push($typeFactory->make($token));
         }
         break;
       }
 
       // End of a string
       if ($this->charIsQuote()){
-        $string = new Type\Scalar\String($this->parseString());
+        $string = $typeFactory->makeString($this->parseString());
         $sexp->push($string);
         continue;
       } 
@@ -73,7 +64,7 @@ class Parser {
       // Token is numeric or a symbol
       if ($this->charIsWhitespace()){
         if ($token != ''){
-          $sexp->push($this->getTypeObj($token));
+          $sexp->push($typeFactory->make($token));
         }
         $token = '';
         continue;

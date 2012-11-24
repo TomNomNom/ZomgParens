@@ -45,7 +45,10 @@ class Sexp extends \Lisp\Type {
       return $arg->evaluate();
     }, $this->args());
 
-    return call_user_func_array($fn, $args);
+    $result = call_user_func_array($fn, $args);
+
+    $tf = new \Lisp\TypeFactory();
+    return $tf->makeScalar($result);
   }
 
 }
