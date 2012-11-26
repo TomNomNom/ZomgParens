@@ -7,10 +7,10 @@ class EvaluatorTest extends \PHPUnit_Framework_TestCase {
     $tf = new \Lisp\TypeFactory();
     $symbols = new \Lisp\SymbolTable([
       '+' => function($a, $b) use($tf){
-        return $tf->makeScalar($a->value() + $b->value());
+        return $a + $b;
       },
       '-' => function($a, $b) use($tf){
-        return $tf->makeScalar($a->value() - $b->value());
+        return $a - $b;
       }
     ]);
 
@@ -31,6 +31,6 @@ class EvaluatorTest extends \PHPUnit_Framework_TestCase {
 
     $e->evaluate();
 
-    $this->assertEquals(5, $e->lastReturnValue()->evaluate(), "Last return value should have been 5");
+    $this->assertEquals(5, $e->lastReturnValue(), "Last return value should have been 5");
   }
 }

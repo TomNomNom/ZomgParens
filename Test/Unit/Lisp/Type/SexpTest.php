@@ -7,10 +7,10 @@ class SexpTest extends \PHPUnit_Framework_TestCase {
     $tf = new \Lisp\TypeFactory();
     $symbols = new \Lisp\SymbolTable([
       '+' => function($a, $b) use($tf){
-        return $tf->makeScalar($a->value() + $b->value());
+        return $a + $b;
       },
       '-' => function($a, $b) use($tf){
-        return $tf->makeScalar($a->value() - $b->value());
+        return $a - $b;
       }
     ]);
 
@@ -70,7 +70,7 @@ class SexpTest extends \PHPUnit_Framework_TestCase {
       new \Lisp\Type\Scalar\Integer('7')
     ]);
 
-    $this->assertEquals(13, $sexp->evaluate($symbols)->value(), "Sexp should have evaluated to 13");
+    $this->assertEquals(13, $sexp->evaluate($symbols), "Sexp should have evaluated to 13");
   }
 
   public function testEvaluateRescurseOnce(){
@@ -85,7 +85,7 @@ class SexpTest extends \PHPUnit_Framework_TestCase {
         new \Lisp\Type\Scalar\Integer('2')
       ])
     ]);
-    $this->assertEquals(5, $sexp->evaluate($symbols)->value(), "Sexp should have evaluated to 5");
+    $this->assertEquals(5, $sexp->evaluate($symbols), "Sexp should have evaluated to 5");
   }
   
 

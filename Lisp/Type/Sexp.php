@@ -38,14 +38,11 @@ class Sexp extends \Lisp\Type {
     $fn = $fnSymbol->evaluate($symbols);
 
     if (!is_callable($fn)){
-      throw new \Lisp\Exception("[{$fnSymbol}] is not callable");
+      throw new \Lisp\Exception("Function [{$fnSymbol->name()}] is not callable");
     }
 
     $args = array_map(function($arg) use($symbols){
-      if ($arg instanceof \Lisp\Type\Sexp){
-        return $arg->evaluate($symbols);
-      }
-      if ($arg instanceof \Lisp\Type\Symbol){
+      if ($arg instanceof \Lisp\Type){
         return $arg->evaluate($symbols);
       }
       return $arg;
@@ -53,8 +50,7 @@ class Sexp extends \Lisp\Type {
 
     $result = call_user_func_array($fn, $args);
 
-    $tf = new \Lisp\TypeFactory();
-    return $tf->makeScalar($result);
+    return $result;
   }
 
 }
